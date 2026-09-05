@@ -21,6 +21,7 @@ All notable project changes are recorded here.
 
 - Fusion output was executed successfully on the target TC55H V4.005 machine.
 - FreeCAD support is software-validated against the FreeCAD 1.1 API and requires its first target-machine acceptance run.
+- A real FreeCAD CAM Job produced a 169-block output that passed the standalone validator and matched the Fusion controller-language format.
 
 ## [0.1.0] - 2026-09-05
 

@@ -61,7 +61,7 @@ Unsafe or unsupported commands stop posting with an error. These include multipl
 
 ## Current verification boundary
 
-Automated tests exercise the adapter and shared renderer without a GUI. The adapter has not yet been physically run on the target TC55H from a FreeCAD-generated Job. Treat the first FreeCAD output as a commissioning program even though it follows the same controller contract as the machine-tested Fusion output.
+Automated tests exercise the adapter and shared renderer. FreeCAD also loaded the installed post and generated a real 169-block CAM Job file that passed the standalone validator and the Fusion-format comparison. The output has not yet been physically run on the target TC55H. Treat the first FreeCAD machine run as a commissioning program even though it follows the same controller contract as the machine-tested Fusion output.
 
 FreeCAD references:
 

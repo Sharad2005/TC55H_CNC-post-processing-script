@@ -22,10 +22,12 @@ This is the maintainer's final dual-CAM handoff release for the Shidai Chaoqun C
 - The controller accepted the post's spindle commands; loaded analog-voltage loss remains a separate electrical issue.
 - The Fusion and Python automated suites pass.
 - FreeCAD adapter tests cover command translation, mm/s to mm/min conversion, spindle scaling, arcs, drilling, errors, file creation, collisions, and continuation behavior.
+- A real FreeCAD CAM Job generated a 169-block `P1.TXT` file with SHA-256 `d282633f532b9cbc42942862d6770732bd93fd078240e72a1924e13a9d3bd535`.
+- That file passed the standalone validator and matched the Fusion output's spacing, numbering, address set, permitted G/M codes, startup structure, and ending structure.
 
 ## Important limitations
 
-- The FreeCAD adapter has not yet completed a target-machine run. Begin with a tool-free, raised-Z, single-block commissioning program.
+- FreeCAD is format-compatible and software-validated, but its output has not completed a target-machine run. Begin with a tool-free, raised-Z, single-block commissioning program.
 - One physical tool and one default fixture are allowed per sequence.
 - Continuation files are selected and started manually without jogging, homing, or resetting work zero.
 - Coolant GPIO, probing, tapping, tool changes, C-axis motion, controller offsets, and compensation are unsupported.

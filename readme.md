@@ -2,7 +2,7 @@
 
 A pair of CAM post processors for a Shidai Chaoqun CM45L / 6040 router using a TopCNC TC55H controller. Autodesk Fusion 360 and the free, open-source FreeCAD CAM workbench both target the same small controller dialect and split programs longer than 900 blocks into manually resumed files.
 
-> **Release status: v1.0.0 — dual-CAM community handoff.** Fusion output has been run successfully on the target machine. The FreeCAD adapter and shared output engine pass automated tests, but FreeCAD-generated output still requires staged physical acceptance. Do not use either post for unattended machining.
+> **Release status: v1.0.0 — dual-CAM community handoff.** Fusion output has been run successfully on the target machine. A real FreeCAD CAM Job produced a 169-block file that passed the TC55H validator and matched Fusion's controller-language format. FreeCAD-generated motion has not been physically executed. Do not use either post for unattended machining.
 
 ## Target configuration
 
@@ -45,7 +45,9 @@ Compatibility with other TC55H revisions or machine wiring is not assumed.
 | `docs/FREECAD_SETUP.md` | FreeCAD installation and CAM Job configuration |
 | `docs/MACHINE_TEST_CHECKLIST.md` | Staged physical-machine acceptance procedure |
 | `docs/VALIDATION_STATUS.md` | Current evidence and adapter acceptance gate |
+| `docs/FORMAT_ACCEPTANCE_v1.0.0.md` | Recorded FreeCAD/Fusion controller-format comparison |
 | `docs/RELEASE_NOTES_v1.0.0.md` | Scope, evidence, and limitations of the dual-CAM release |
+| `docs/RELEASE_CHECKLIST.md` | Final verification and GitHub publishing procedure |
 | `report-source.md` | Controller research dossier and source ledger |
 
 ## Install in Fusion
@@ -120,6 +122,6 @@ Current evidence and the remaining FreeCAD acceptance gate are tracked in [valid
 
 ## Licensing and third-party material
 
-No project-wide open-source license has been selected yet. Public use and contribution terms must be chosen before the first release. See [NOTICE.md](NOTICE.md) for Autodesk attribution, trademarks, third-party documents, and the current licensing boundary.
+No project-wide open-source license has been selected yet. Publication does not by itself grant public reuse rights. Choose a license or confirm the applicable redistribution terms before inviting reuse or contributions. See [NOTICE.md](NOTICE.md) for Autodesk attribution, trademarks, third-party documents, and the current licensing boundary.
 
 Autodesk Fusion is a trademark of Autodesk, Inc. TopCNC, TC55H, CM45L, and Shidai Chaoqun names belong to their respective owners. This project is independent and is not endorsed by those companies.

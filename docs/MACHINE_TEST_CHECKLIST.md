@@ -6,6 +6,8 @@ Record the date, Fusion version, `tc55h.cps` checksum/commit, controller hardwar
 
 For FreeCAD tests, record the FreeCAD version plus the checksums of both `tc55h_post.py` and `tc55h_core.py`. Run the same motion, continuation, and material checks and compare against the FreeCAD simulation.
 
+FreeCAD format acceptance was recorded on 2026-09-05: a real CAM Job generated 169 sequential blocks, passed `validate_tc55h_output.py`, and matched the Fusion controller-language structure. This reduces the remaining FreeCAD work to physical motion acceptance; it does not replace it.
+
 ## Evidence recorded for v0.1.0
 
 On 2026-09-05 the target TC55H V4.005 machine successfully imported and executed generated output. X, Y, and Z commanded distances and coordinate directions were confirmed. X direction was corrected using the X-axis ZDM-2HA865 driver's `P002` setting; this was a machine configuration change, not a post change. The post's spindle commands were accepted, while inaccurate loaded analog voltage was classified as a separate controller/VFD electrical issue.
