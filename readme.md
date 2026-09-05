@@ -1,8 +1,8 @@
-# TC55H post processor for Fusion
+# TC55H post processor for Autodesk Fusion 360
 
-An experimental Autodesk Fusion post processor for a Shidai Chaoqun CM45L using a TopCNC TC55H controller. It produces a deliberately small, controller-specific G-code dialect and splits programs longer than the controller's 999-block limit into manually resumed files.
+An Autodesk Fusion 360 post processor for a Shidai Chaoqun CM45L using a TopCNC TC55H controller. It produces a deliberately small, controller-specific G-code dialect and splits programs longer than 900 blocks into manually resumed files.
 
-> **Development status: machine validation pending.** Fusion can generate and split output successfully, and the automated format tests pass. The generated programs have not yet completed the physical-machine acceptance procedure. Do not use this project for unattended or production machining.
+> **Release status: v0.1.0 — initial Fusion 360 release.** Core XYZ posting, controller import, execution, direction, and distance were tested on the target machine. Automated formatting, scaling, and continuation tests pass. Formal arc, drilling, exact-900-block, and manual continuation acceptance remain open, so do not use this release for unattended machining.
 
 ## Target configuration
 
@@ -27,20 +27,22 @@ Compatibility with other TC55H revisions or machine wiring is not assumed.
 - Rejects multiple tools, rotary motion, work offsets, cutter compensation, optional sections, probing, tapping, and passthrough commands.
 - Omits coolant commands until the machine's GPIO mapping is verified.
 - Scales Fusion spindle values such as `24000 RPM` to TC55H `S2400`.
-- Creates consecutive `P1.TXT`, `P2.TXT`, and later files when a job exceeds 999 blocks.
+- Creates consecutive `P1.TXT`, `P2.TXT`, and later files when a job exceeds the 900-block operational limit.
 - Includes a separate validator for individual programs and continuation handoffs.
 
 ## Repository layout
 
 | Path | Purpose |
 | --- | --- |
-| `tc55h.cps` | Fusion post processor under test |
+| `tc55h.cps` | Fusion 360 post processor |
 | `TC55H_OUTPUT_SPEC.md` | Draft CAM-independent, ISA-style output specification |
 | `validate_tc55h_output.py` | Static validator for one file or an ordered sequence |
+| `SHA256SUMS` | Release checksums for the post and validator |
 | `tests/` | JavaScript post logic tests and Python validator tests |
 | `docs/FUSION_SETUP.md` | Fusion machine and NC Program configuration |
 | `docs/MACHINE_TEST_CHECKLIST.md` | Staged physical-machine acceptance procedure |
 | `docs/VALIDATION_STATUS.md` | Current evidence and freeze gate |
+| `docs/RELEASE_NOTES_v0.1.0.md` | Scope, evidence, and known limitations of the first release |
 | `report-source.md` | Controller research dossier and source ledger |
 
 ## Install in Fusion
@@ -62,10 +64,13 @@ For a 24,000 RPM tool, the beginning of a typical file is:
 
 ```text
 N1 G90 M03 S2400
-N2 G00 X0 Y0 Z5
+N2 G00 Z5
+N3 X0 Y0
 ```
 
-Each file contains at most 999 blocks. If continuation files are generated, load and start them manually in numeric order without changing work zero or machine position between files.
+The initial Z-only rapid is intentional: the post reaches Fusion's clearance Z before its first horizontal move.
+
+Each generated file contains at most 900 blocks. Although the controller documentation states a 999-line capacity, the target V4.005 unit became unresponsive with a near-limit program. The post therefore keeps a 99-block safety margin. If continuation files are generated, load and start them manually in numeric order without changing work zero or machine position between files.
 
 ## Validate generated output
 
@@ -81,7 +86,7 @@ Validate a continuation sequence in execution order:
 python3 validate_tc55h_output.py /path/to/P1.TXT /path/to/P2.TXT /path/to/P3.TXT
 ```
 
-Validation checks the file names, ASCII formatting, permitted words, block numbering, 999-block limit, spindle-command range, endings, consecutive filenames, and continuation position/state restoration. It does not prove that a toolpath, work offset, feed, fixture, or machine setup is safe.
+Validation checks the file names, ASCII formatting, permitted words, block numbering, 900-block operational limit, spindle-command range, endings, consecutive filenames, and continuation position/state restoration. It does not prove that a toolpath, work offset, feed, fixture, or machine setup is safe.
 
 ## Run the automated tests
 
@@ -94,13 +99,13 @@ python3 -m unittest discover -s tests -p 'test_*.py'
 
 ## Before running on the CNC
 
-Follow [the machine test checklist](docs/MACHINE_TEST_CHECKLIST.md). At minimum: inspect and simulate the output, run the TC55H syntax check, remove the tool for initial tests, verify spindle voltage and direction, use single-block mode, keep Z raised, and be ready to stop the machine.
+Follow [the machine test checklist](docs/MACHINE_TEST_CHECKLIST.md). At minimum: inspect and simulate the output, run the TC55H syntax check, remove the tool for initial tests, verify spindle start/stop and direction, use single-block mode, keep Z raised, and be ready to stop the machine. Actual 0–10 V accuracy is a machine electrical commissioning issue; the post guarantees only the emitted `S` command.
 
 ## Porting to another CAM
 
 The post is split conceptually into a CAM adapter, a controller-independent event stream, and a TC55H renderer/partitioner. A FreeCAD Path or other CAM implementation should follow [the draft output specification](TC55H_OUTPUT_SPEC.md), not translate Fusion callback names directly.
 
-The specification is intentionally marked **Draft** until the real controller tests pass. Once the acceptance evidence is recorded, a reviewed revision can be frozen as the interoperability baseline.
+The specification remains **Draft 0.2** until the remaining controller tests are recorded. Once the acceptance evidence is complete, a reviewed revision can be frozen as the interoperability baseline for the planned free-CAM implementation.
 
 Current progress and the exact freeze gate are tracked in [validation status](docs/VALIDATION_STATUS.md).
 

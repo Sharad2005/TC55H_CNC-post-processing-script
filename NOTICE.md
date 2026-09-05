@@ -20,4 +20,4 @@ TopCNC, TC55H, CM45L, and Shidai Chaoqun names and marks belong to their respect
 
 ## Safety
 
-The software and documentation are experimental. Automated validation detects a limited set of formatting and continuation errors; it cannot establish that a program is safe for a particular machine, tool, workpiece, fixture, operator, or electrical configuration.
+Release v0.1.0 has core XYZ machine-test evidence, but automated validation detects only a limited set of formatting and continuation errors. It cannot establish that a program is safe for a particular machine, tool, workpiece, fixture, operator, or electrical configuration.

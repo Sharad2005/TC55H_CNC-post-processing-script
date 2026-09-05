@@ -13,4 +13,4 @@ This project controls real machinery. Small formatting changes can create unsafe
 
 Never commit generated `P*.TXT` production files, personal machine parameters, credentials, `.DS_Store`, cache folders, or third-party manuals/source files without clear redistribution permission.
 
-Changes to the draft interface specification require a rationale and compatibility impact. Do not mark it frozen until the physical acceptance checklist has passed and the supporting results are committed.
+Changes to the Draft 0.2 interface specification require a rationale and compatibility impact. Do not mark it frozen until the physical acceptance checklist has passed and the supporting results are committed.

@@ -104,6 +104,20 @@ assert.throws(() => context.getSpindleCommand(24001), /24000 RPM/);
 
 assert.strictEqual(context.makeLine(1, ["G90", "M03", "S2400"]), "N1 G90 M03 S2400");
 
+context.events.length = 0;
+context.jobState.position = {x: undefined, y: undefined, z: undefined};
+context.queueSectionInitialPosition({x: 49.449, y: 91.652, z: 30}, true);
+assert.deepStrictEqual(
+  JSON.parse(JSON.stringify(context.events.map(event => event.position))),
+  [
+    {z: 30},
+    {x: 49.449, y: 91.652, z: 30},
+  ],
+  "first section must reach clearance Z before rapid XY"
+);
+context.events.length = 0;
+context.jobState.position = {x: undefined, y: undefined, z: undefined};
+
 const realisticOpeningEvents = [{
   type: "spindleStart",
   clockwise: true,
@@ -134,8 +148,8 @@ assert.strictEqual(forcedSegments.length, 2);
 assert.strictEqual(forcedSegments.reduce((sum, segment) => sum + segment.events.length, 0), forcedEvents.length);
 const forcedFirst = context.renderSegment(forcedSegments[0], 0);
 const forcedSecond = context.renderSegment(forcedSegments[1], 1);
-assert.strictEqual(forcedFirst.length, 999);
-assert.ok(forcedSecond.length <= 999);
+assert.strictEqual(forcedFirst.length, 900);
+assert.ok(forcedSecond.length <= 900);
 assert.match(forcedFirst.at(-2), /^N\d+ G00 Z5$/);
 assert.match(forcedFirst.at(-1), /^N\d+ M05 M02$/);
 assert.strictEqual(forcedSecond[0], "N1 G90 M03 S1200");
@@ -150,19 +164,19 @@ for (const line of [...forcedFirst, ...forcedSecond]) {
   assert.match(line, /^N\d+(?: [A-Z][+-]?(?:\d+(?:\.\d*)?|\.\d+))+$/);
 }
 
-const naturalEvents = syntheticEvents(1100, 950);
+const naturalEvents = syntheticEvents(1100, 850);
 const naturalSegments = context.partitionEvents(naturalEvents);
-assert.strictEqual(naturalSegments[0].events.length, 950);
+assert.strictEqual(naturalSegments[0].events.length, 850);
 const naturalFirst = context.renderSegment(naturalSegments[0], 0);
 assert.doesNotMatch(naturalFirst.at(-2), /G00 Z5$/);
 assert.match(naturalFirst.at(-1), /M05 M02$/);
 
-const oldMaximumBlocks = context.TC55H_MAXIMUM_PROGRAM_BLOCKS;
+const oldMaximumBlocks = context.TC55H_OPERATIONAL_BLOCK_LIMIT;
 const oldMaximumFiles = context.TC55H_MAXIMUM_SEQUENCE_FILES;
-context.TC55H_MAXIMUM_PROGRAM_BLOCKS = 10;
+context.TC55H_OPERATIONAL_BLOCK_LIMIT = 10;
 context.TC55H_MAXIMUM_SEQUENCE_FILES = 3;
 assert.throws(() => context.partitionEvents(syntheticEvents(40)), /99-file/);
-context.TC55H_MAXIMUM_PROGRAM_BLOCKS = oldMaximumBlocks;
+context.TC55H_OPERATIONAL_BLOCK_LIMIT = oldMaximumBlocks;
 context.TC55H_MAXIMUM_SEQUENCE_FILES = oldMaximumFiles;
 
 context.baseProgramNumber = 9999;

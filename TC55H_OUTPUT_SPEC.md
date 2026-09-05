@@ -1,6 +1,6 @@
 # TC55H CAM Post Interface Specification
 
-**Document status:** Draft 0.1 — developing and not frozen
+**Document status:** Draft 0.2 — developing and not frozen
 
 **Target:** TC55H software `TC55HV4005Z00000` (V4.005), XYZ configuration
 
@@ -46,7 +46,7 @@ Helical arcs, changing-Z arcs, and arcs outside the XY plane MUST be linearized 
 - Filename: uppercase `P` followed by 1–4 digits, with uppercase `.TXT` extension.
 - Jobs exceeding one controller program are emitted as consecutive numbers: `P1.TXT`, `P2.TXT`, and so on.
 - Encoding: ASCII.
-- Maximum length: 999 nonempty blocks per file, including continuation and ending blocks.
+- Maximum generated length: 900 nonempty blocks per file, including continuation and ending blocks. The manual's 999-line controller capacity is not used because the target V4.005 unit became unresponsive near that limit.
 - The complete sequence may contain at most 99 files and may not exceed `P9999.TXT`.
 - Blocks restart at `N1` in every file and remain consecutive within that file.
 - Every program word is separated by exactly one ASCII space, for example `N1 G90 M03 S2400`.
@@ -68,6 +68,8 @@ LF          = ASCII 0x0A ;
 Readers MAY accept a final block without a trailing LF, but writers SHOULD emit one. Writers MUST NOT emit lowercase letters, tabs, CR-only endings, Unicode, blank blocks, leading/trailing spaces, or more than one space between words.
 
 The first file MUST begin with a block containing `G90`, the requested spindle direction (`M03` or `M04`), and the scaled `S` value. The last block of every file MUST be exactly `M05 M02`.
+
+The first motion in the first file MUST rapid Z alone to the CAM operation's initial clearance position before any X/Y rapid. This prevents the initial horizontal move from occurring at an unknown or unsafe Z position.
 
 ## Supported words
 
@@ -136,6 +138,8 @@ The physical range is greater than zero through 24,000 RPM, producing at most `S
 
 The division and rounding MUST be applied once at the output boundary for both initial spindle start and later speed changes. CAM data and intermediate events retain physical RPM. Requests at or below zero or above 24,000 RPM MUST stop generation.
 
+This contract specifies the command written by the CAM post; it does not guarantee the controller's loaded analog voltage or the VFD's physical RPM. Electrical deviations MUST be diagnosed in the machine wiring, controller output, and VFD configuration rather than compensated by silently changing this mapping.
+
 ## Deliberately unsupported
 
 The post must reject multiple tools, rotary motion, multiple setup origins, tilted workplanes, controller work offsets, cutter compensation, optional blocks, and manual passthrough commands. Coolant requests are silently omitted until a verified `M51`–`M66` GPIO mapping is added.
@@ -164,10 +168,10 @@ The draft may be frozen only after recording successful results for:
 
 - rapid and linear positioning, feed changes, and pauses;
 - clockwise/counter-clockwise spindle direction and stop behavior;
-- physical spindle tests at 6000, 12000, 18000, and 24000 RPM;
+- correct emitted spindle commands at 6000, 12000, 18000, and 24000 physical-RPM inputs, plus controller acceptance of spindle start/stop commands;
 - partial arcs and full circles in both directions;
 - supported drilling expansion and dwell timing;
-- 999-block acceptance and 1000-block splitting;
+- 900-block acceptance and 901-block splitting;
 - forced below-clearance and natural clearance-height continuations;
 - manual execution of at least two consecutive files without coordinate drift;
 - rejection of invalid speed, multiple tools, rotary paths, and unsupported commands; and

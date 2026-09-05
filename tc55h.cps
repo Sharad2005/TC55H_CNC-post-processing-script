@@ -8,6 +8,8 @@
   Target controller:
     2016K_TC55H(B)_V2.0 / 2016KTC55H(T)_V1.0
     Software TC55HV4005Z00000
+
+  Release: 0.1.0 (Fusion 360 initial release)
 */
 
 description = "TopCNC TC55H (CM45L, XYZ, continuation files)";
@@ -33,7 +35,9 @@ allowHelicalMoves = false;
 allowSpiralMoves = false;
 allowedCircularPlanes = 1 << PLANE_XY;
 
-var TC55H_MAXIMUM_PROGRAM_BLOCKS = 999;
+// The controller documents 999 lines, but the target V4.005 unit became
+// unresponsive near that limit. Keep operational files at or below 900.
+var TC55H_OPERATIONAL_BLOCK_LIMIT = 900;
 var TC55H_MAXIMUM_SEQUENCE_FILES = 99;
 var TC55H_SAFE_SPLIT_LOOKBACK = 100;
 var TC55H_MAXIMUM_PHYSICAL_SPINDLE_RPM = 24000;
@@ -225,6 +229,21 @@ function queueRapid(x, y, z) {
   appendEvent({type:"rapid", position:copyPosition(jobState.position), isMotion:true});
 }
 
+function queueSectionInitialPosition(initialPosition, firstSection) {
+  if (firstSection) {
+    // On the first section the controller's current XY position is unknown.
+    // Reach Fusion's clearance Z before making any horizontal rapid move.
+    queueRapid(undefined, undefined, initialPosition.z);
+    queueRapid(initialPosition.x, initialPosition.y, initialPosition.z);
+    return;
+  }
+  if (jobState.position.z < initialPosition.z - tolerance) {
+    queueRapid(jobState.position.x, jobState.position.y, initialPosition.z);
+  }
+  queueRapid(initialPosition.x, initialPosition.y, jobState.position.z);
+  queueRapid(initialPosition.x, initialPosition.y, initialPosition.z);
+}
+
 function queueLinear(x, y, z, feed) {
   validateCoordinate(x, "X");
   validateCoordinate(y, "Y");
@@ -278,11 +297,7 @@ function onSection() {
     validateFeed(jobState.plungeFeed);
   }
   queueSpindleStart(tool.spindleRPM, tool.clockwise, isFirstSection());
-  if (!isFirstSection() && jobState.position.z < initialPosition.z - tolerance) {
-    queueRapid(jobState.position.x, jobState.position.y, initialPosition.z);
-  }
-  queueRapid(initialPosition.x, initialPosition.y, jobState.position.z);
-  queueRapid(initialPosition.x, initialPosition.y, initialPosition.z);
+  queueSectionInitialPosition(initialPosition, isFirstSection());
 }
 
 function onRapid(x, y, z) {
@@ -430,7 +445,7 @@ function partitionEvents(sourceEvents) {
     for (var end = start + 1; end <= sourceEvents.length; ++end) {
       var boundaryState = sourceEvents[end - 1].after;
       var endingCount = end == sourceEvents.length ? 1 : getIntermediateEndingCount(boundaryState);
-      if (openingCount + (end - start) + endingCount > TC55H_MAXIMUM_PROGRAM_BLOCKS) {
+      if (openingCount + (end - start) + endingCount > TC55H_OPERATIONAL_BLOCK_LIMIT) {
         break;
       }
       if (end == sourceEvents.length || canHandoffAtState(boundaryState)) {
@@ -489,8 +504,8 @@ function makeLine(sequence, words) {
 }
 
 function appendRenderedLine(lines, words) {
-  if (lines.length >= TC55H_MAXIMUM_PROGRAM_BLOCKS) {
-    error(localize("Rendered TC55H continuation exceeds 999 blocks."));
+  if (lines.length >= TC55H_OPERATIONAL_BLOCK_LIMIT) {
+    error(localize("Rendered TC55H continuation exceeds the 900-block operational limit."));
     return;
   }
   lines.push(makeLine(lines.length + 1, words));

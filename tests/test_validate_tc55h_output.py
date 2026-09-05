@@ -138,9 +138,9 @@ class ValidatorTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_sequence([first, second])
 
-    def test_rejects_more_than_999_blocks(self) -> None:
-        lines = [f"N{number} G00 X{number}" for number in range(1, 1000)]
-        lines.append("N1000 M05 M02")
+    def test_rejects_more_than_900_blocks(self) -> None:
+        lines = [f"N{number} G00 X{number}" for number in range(1, 901)]
+        lines.append("N901 M05 M02")
         self.assert_rejected("\n".join(lines) + "\n")
 
 

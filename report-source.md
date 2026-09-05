@@ -4,7 +4,7 @@ Audience: Owner/operator preparing for later programming, setup, diagnosis, or r
 
 Research date: 4 September 2026
 
-Scope: Beijing Shidai Chaoqun CM45L controller family and its TopCNC TC55H hardware/firmware lineage. The host CNC machine is not yet identified.
+Scope: Beijing Shidai Chaoqun CM45L controller family and its TopCNC TC55H hardware/firmware lineage, installed on the tested generic 6040 XYZ CNC router.
 
 ## Direct answer
 

@@ -4,6 +4,12 @@ This checklist is evidence for developing the post; it is not a substitute for t
 
 Record the date, Fusion version, `tc55h.cps` checksum/commit, controller hardware/software version, test file names, operator, and outcome for every session.
 
+## Evidence recorded for v0.1.0
+
+On 2026-09-05 the target TC55H V4.005 machine successfully imported and executed generated output. X, Y, and Z commanded distances and coordinate directions were confirmed. X direction was corrected using the X-axis ZDM-2HA865 driver's `P002` setting; this was a machine configuration change, not a post change. The post's spindle commands were accepted, while inaccurate loaded analog voltage was classified as a separate controller/VFD electrical issue.
+
+Unchecked items below remain the formal acceptance work for freezing the CAM-independent specification.
+
 ## 1. Before applying motion
 
 - [ ] Photograph or record all TC55H Control, Speed, I/O, output-map, and version pages.
@@ -17,9 +23,9 @@ Record the date, Fusion version, `tc55h.cps` checksum/commit, controller hardwar
 - [ ] Run `validate_tc55h_output.py` on the entire generated sequence.
 - [ ] Inspect every line and run the TC55H syntax checker on every file.
 
-## 2. Spindle-only test
+## 2. Spindle command and machine electrical test
 
-Keep axes stationary and measure the VFD command or spindle behavior safely.
+Keep axes stationary and measure the VFD command or spindle behavior safely. The required-output column is the software contract. Voltage/RPM accuracy depends on controller and VFD wiring and is recorded separately from post conformance.
 
 | Fusion RPM | Required output | Expected physical result | Pass |
 | ---: | ---: | ---: | :---: |
@@ -41,6 +47,8 @@ Measured voltage/RPM and deviations:
 18000:
 24000:
 ```
+
+A voltage or RPM deviation does not justify changing the post's fixed 10:1 mapping unless the TC55H command semantics are proven different. Diagnose controller power, analog-output loading, VFD configuration, and wiring independently.
 
 ## 3. Raised-Z motion test
 
@@ -70,9 +78,9 @@ Measured voltage/RPM and deviations:
 
 ## 6. Block limit and continuation test
 
-First use two deliberately short continuation files; do not begin with a 999-block cutting program.
+First use two deliberately short continuation files; do not begin with a 900-block cutting program.
 
-- [ ] Confirm every file begins at `N1` and contains no more than 999 blocks.
+- [ ] Confirm every file begins at `N1` and contains no more than 900 blocks.
 - [ ] Confirm intermediate files retract Z before `M05 M02` when below clearance.
 - [ ] Confirm the following file restores `G90`, direction, and scaled spindle speed.
 - [ ] Confirm it rapids to saved X/Y while the machine remains at safe Z.
@@ -80,8 +88,8 @@ First use two deliberately short continuation files; do not begin with a 999-blo
 - [ ] Confirm the first new machining motion is explicit and no completed motion repeats.
 - [ ] Without jogging or rezeroing, manually start the next file and compare the resumed path.
 - [ ] Test a natural split at clearance and verify redundant Z descent is absent.
-- [ ] Generate exactly 999 blocks in one file and confirm controller acceptance.
-- [ ] Generate a job requiring a 1000th block and confirm correct splitting.
+- [ ] Generate exactly 900 blocks in one file and confirm controller acceptance without UI lockup.
+- [ ] Generate a job requiring a 901st block and confirm correct splitting.
 - [ ] Confirm an existing continuation filename causes posting to fail without overwrite.
 
 ## 7. Controlled material test

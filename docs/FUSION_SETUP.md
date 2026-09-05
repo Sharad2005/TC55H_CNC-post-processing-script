@@ -12,6 +12,8 @@ Typical macOS location:
 ~/Library/Application Support/Autodesk/Fusion 360 CAM/Posts/
 ```
 
+For release `v0.1.0`, replace older copies of the post so Fusion uses the 900-block limit and clearance-Z-first startup behavior.
+
 ## Machine definition
 
 ### General
@@ -68,6 +70,8 @@ Do not add guessed travel limits. Change each range to Limited only after measur
 - Define clearance and retract heights that are genuinely safe for stock, clamps, and fixtures.
 - Define a positive plunge feed for every operation that may be split below clearance.
 - Simulate the complete selection before posting.
+
+The first generated motion is a Z-only rapid to the operation's initial clearance position. Fusion clearance must therefore be valid in the same work coordinate system established on the TC55H.
 
 ## NC Program settings
 

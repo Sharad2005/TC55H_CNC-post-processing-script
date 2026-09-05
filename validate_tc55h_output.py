@@ -15,7 +15,7 @@ WORD = re.compile(r"^([A-Z])([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+))$")
 ALLOWED_G = {0, 1, 2, 3, 4, 90}
 ALLOWED_M = {0, 2, 3, 4, 5}
 ALLOWED_LETTERS = {"G", "M", "X", "Y", "Z", "I", "J", "K", "F", "S"}
-MAX_BLOCKS = 999
+MAX_BLOCKS = 900
 MAX_FILES = 99
 
 
