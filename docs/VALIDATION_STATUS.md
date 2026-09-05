@@ -1,8 +1,8 @@
 # Validation status
 
-**Overall status:** v0.1.0 initial Fusion release — core XYZ machine-tested; extended acceptance in progress
+**Overall status:** v1.0.0 dual-CAM handoff — Fusion machine-tested; FreeCAD software-tested
 
-**Specification:** Draft 0.2 — not frozen
+**Specification:** Baseline 1.0 — frozen output contract
 
 **Target controller software:** `TC55HV4005Z00000`
 
@@ -21,19 +21,23 @@
 | Filename/block limits | Automated pass | Collision, overflow, and 900-block operational-cap checks |
 | Near-documented-limit program | Failed | Target controller became unresponsive in AUTO with a near-999-line program; operational cap reduced to 900 |
 | Core controller syntax/motion | Pass | Generated program accepted and executed; XYZ directions and distances confirmed |
+| FreeCAD 1.1 adapter | Automated pass | Commands, units, spindle, arcs, drilling, errors, file writing, and collision handling |
+| Shared FreeCAD output core | Automated pass | Formatting, scaling, linearization, 900-block partition, retract, restart, and filenames |
+| FreeCAD GUI/runtime | Not run locally | Installed application command-line engine reports an incompatible Qt processor build on the development Mac |
+| FreeCAD output on target machine | Pending | Requires staged tool-free execution and comparison with FreeCAD simulation |
 | Analog spindle voltage accuracy | Deferred, external | TC55H/VFD electrical loading is separate from post output; `S` scaling remains unchanged |
 | Arcs, drilling, and dwell | Pending | Requires target-machine execution |
 | Manual continuation | Pending | Requires consecutive-file execution without repositioning |
 | Material cut | Pending | Final staged acceptance step |
 
-## Freeze gate
+## Adapter acceptance gate
 
-Do not change the specification status to Frozen until:
+Do not describe the FreeCAD adapter as machine-accepted until:
 
 1. every mandatory section of `MACHINE_TEST_CHECKLIST.md` has evidence;
 2. any observed difference is reflected in code, specification, and a regression test;
 3. the complete automated suite passes from a clean checkout;
 4. the final candidate is reposted and retested rather than relying on output from an older file; and
-5. the validated commit is tagged with a release version.
+5. the validated commit and generated files are recorded.
 
-Release `v0.1.0` covers Autodesk Fusion 360 only. The next implementation will target one common free CAM system after the interface specification is frozen; it must implement the controller contract rather than copy Fusion-specific callbacks.
+Release `v1.0.0` contains both Fusion 360 and FreeCAD CAM implementations. Baseline 1.0 freezes their controller-facing contract; future incompatible changes require a new specification revision.

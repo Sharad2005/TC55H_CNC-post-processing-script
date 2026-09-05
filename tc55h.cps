@@ -9,7 +9,8 @@
     2016K_TC55H(B)_V2.0 / 2016KTC55H(T)_V1.0
     Software TC55HV4005Z00000
 
-  Release: 0.1.0 (Fusion 360 initial release)
+  Release: 1.0.0 (dual-CAM community handoff)
+  Controller-output contract: TC55H Baseline 1.0
 */
 
 description = "TopCNC TC55H (CM45L, XYZ, continuation files)";

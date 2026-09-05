@@ -2,6 +2,26 @@
 
 All notable project changes are recorded here.
 
+## [1.0.0] - 2026-09-05
+
+### Added
+
+- FreeCAD CAM 1.1 adapter in `tc55h_post.py`.
+- CAM-independent Python event model, renderer, spindle scaler, arc linearizer, and 900-block continuation partitioner in `tc55h_core.py`.
+- FreeCAD installation and Job configuration guide.
+- Automated tests for FreeCAD command translation, feed conversion, arcs, drilling, output writing, collision handling, and the shared controller core.
+
+### Changed
+
+- Documented Fusion and FreeCAD as two implementations of the same TC55H output contract.
+- Promoted the controller interface document to the v1.0 interoperability baseline while retaining explicit machine-acceptance gaps.
+- Prepared the repository as the maintainer's dual-CAM community handoff release.
+
+### Verification boundary
+
+- Fusion output was executed successfully on the target TC55H V4.005 machine.
+- FreeCAD support is software-validated against the FreeCAD 1.1 API and requires its first target-machine acceptance run.
+
 ## [0.1.0] - 2026-09-05
 
 ### Added

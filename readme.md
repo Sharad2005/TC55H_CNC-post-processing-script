@@ -1,8 +1,8 @@
-# TC55H post processor for Autodesk Fusion 360
+# TC55H post processors for Fusion 360 and FreeCAD CAM
 
-An Autodesk Fusion 360 post processor for a Shidai Chaoqun CM45L using a TopCNC TC55H controller. It produces a deliberately small, controller-specific G-code dialect and splits programs longer than 900 blocks into manually resumed files.
+A pair of CAM post processors for a Shidai Chaoqun CM45L / 6040 router using a TopCNC TC55H controller. Autodesk Fusion 360 and the free, open-source FreeCAD CAM workbench both target the same small controller dialect and split programs longer than 900 blocks into manually resumed files.
 
-> **Release status: v0.1.0 — initial Fusion 360 release.** Core XYZ posting, controller import, execution, direction, and distance were tested on the target machine. Automated formatting, scaling, and continuation tests pass. Formal arc, drilling, exact-900-block, and manual continuation acceptance remain open, so do not use this release for unattended machining.
+> **Release status: v1.0.0 — dual-CAM community handoff.** Fusion output has been run successfully on the target machine. The FreeCAD adapter and shared output engine pass automated tests, but FreeCAD-generated output still requires staged physical acceptance. Do not use either post for unattended machining.
 
 ## Target configuration
 
@@ -35,14 +35,17 @@ Compatibility with other TC55H revisions or machine wiring is not assumed.
 | Path | Purpose |
 | --- | --- |
 | `tc55h.cps` | Fusion 360 post processor |
-| `TC55H_OUTPUT_SPEC.md` | Draft CAM-independent, ISA-style output specification |
+| `tc55h_post.py` | FreeCAD CAM 1.1 post adapter |
+| `tc55h_core.py` | CAM-independent renderer and continuation engine used by FreeCAD |
+| `TC55H_OUTPUT_SPEC.md` | CAM-independent, ISA-style output specification |
 | `validate_tc55h_output.py` | Static validator for one file or an ordered sequence |
 | `SHA256SUMS` | Release checksums for the post and validator |
-| `tests/` | JavaScript post logic tests and Python validator tests |
+| `tests/` | Fusion, FreeCAD adapter, shared-core, and validator regression tests |
 | `docs/FUSION_SETUP.md` | Fusion machine and NC Program configuration |
+| `docs/FREECAD_SETUP.md` | FreeCAD installation and CAM Job configuration |
 | `docs/MACHINE_TEST_CHECKLIST.md` | Staged physical-machine acceptance procedure |
-| `docs/VALIDATION_STATUS.md` | Current evidence and freeze gate |
-| `docs/RELEASE_NOTES_v0.1.0.md` | Scope, evidence, and known limitations of the first release |
+| `docs/VALIDATION_STATUS.md` | Current evidence and adapter acceptance gate |
+| `docs/RELEASE_NOTES_v1.0.0.md` | Scope, evidence, and limitations of the dual-CAM release |
 | `report-source.md` | Controller research dossier and source ledger |
 
 ## Install in Fusion
@@ -69,6 +72,12 @@ N3 X0 Y0
 ```
 
 The initial Z-only rapid is intentional: the post reaches Fusion's clearance Z before its first horizontal move.
+
+## Install in FreeCAD
+
+Copy `tc55h_post.py` and `tc55h_core.py` together into FreeCAD's user macro directory, restart FreeCAD, and select the `tc55h` post in the CAM Job. Keep **Split Output** disabled and post to an exact name such as `P1.TXT` in an empty directory.
+
+Read [the complete FreeCAD setup guide](docs/FREECAD_SETUP.md) before posting.
 
 Each generated file contains at most 900 blocks. Although the controller documentation states a 999-line capacity, the target V4.005 unit became unresponsive with a near-limit program. The post therefore keeps a 99-block safety margin. If continuation files are generated, load and start them manually in numeric order without changing work zero or machine position between files.
 
@@ -103,11 +112,11 @@ Follow [the machine test checklist](docs/MACHINE_TEST_CHECKLIST.md). At minimum:
 
 ## Porting to another CAM
 
-The post is split conceptually into a CAM adapter, a controller-independent event stream, and a TC55H renderer/partitioner. A FreeCAD Path or other CAM implementation should follow [the draft output specification](TC55H_OUTPUT_SPEC.md), not translate Fusion callback names directly.
+The implementation is split into a CAM adapter, a controller-independent event stream, and a TC55H renderer/partitioner. New CAM implementations should follow [the output specification](TC55H_OUTPUT_SPEC.md), not translate Fusion or FreeCAD callback names directly.
 
-The specification remains **Draft 0.2** until the remaining controller tests are recorded. Once the acceptance evidence is complete, a reviewed revision can be frozen as the interoperability baseline for the planned free-CAM implementation.
+Baseline 1.0 is the interoperability contract for Fusion and FreeCAD. Unverified controller behavior and future C-axis or GPIO work remain explicitly outside this profile.
 
-Current progress and the exact freeze gate are tracked in [validation status](docs/VALIDATION_STATUS.md).
+Current evidence and the remaining FreeCAD acceptance gate are tracked in [validation status](docs/VALIDATION_STATUS.md).
 
 ## Licensing and third-party material
 

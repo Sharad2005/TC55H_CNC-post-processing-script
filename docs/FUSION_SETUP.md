@@ -12,7 +12,7 @@ Typical macOS location:
 ~/Library/Application Support/Autodesk/Fusion 360 CAM/Posts/
 ```
 
-For release `v0.1.0`, replace older copies of the post so Fusion uses the 900-block limit and clearance-Z-first startup behavior.
+For release `v1.0.0`, replace older copies of the post so Fusion uses the 900-block limit and clearance-Z-first startup behavior.
 
 ## Machine definition
 

@@ -145,5 +145,8 @@ Searches in English and Chinese found the controller family, not a complete CM45
 7. Shidai Chaoqun official controller category: https://www.sdcq-micromotor.cn/Products_list/65.html. Identifies CM45L as a controller.
 8. Auto520 CM45L family listing: https://www.auto520.net/p/g-code/. Secondary source for -10/-20/-30/-40 axis-count mapping and 24 V supply.
 9. Mehatron `CM45L Instruction Manual`: https://mehatron.rs/Attachment/DownloadFile?downloadId=53. Secondary copy whose CM45L title and TC55H body corroborate the OEM/rebrand conclusion.
+10. FreeCAD `CAM Post` documentation: https://github.com/FreeCAD/FreeCAD-documentation/blob/main/wiki/CAM_Post.md. Primary project documentation for installing, selecting, and invoking a custom CAM post.
+11. FreeCAD 1.1.3 `Path.Post.Processor` source: https://github.com/FreeCAD/FreeCAD/blob/1.1.3/src/Mod/CAM/Path/Post/Processor.py. Primary API source for the class-based post entry point and job postables.
+12. FreeCAD releases: https://github.com/FreeCAD/FreeCAD/releases. Primary release source used to identify the supported FreeCAD 1.1 series.
 
 Research stopped after targeted searches produced duplicate copies of the same manuals and weaker reseller descriptions. Remaining unknowns require the physical unit and host-machine documentation, not more generic TC55H web sources.

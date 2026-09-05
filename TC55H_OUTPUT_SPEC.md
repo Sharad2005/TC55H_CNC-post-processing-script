@@ -1,14 +1,14 @@
 # TC55H CAM Post Interface Specification
 
-**Document status:** Draft 0.2 — developing and not frozen
+**Document status:** Baseline 1.0 — frozen controller-output contract for release v1.0.0
 
 **Target:** TC55H software `TC55HV4005Z00000` (V4.005), XYZ configuration
 
-**Purpose:** CAM-independent contract for producing the same controller files as `tc55h.cps`
+**Purpose:** CAM-independent contract shared by `tc55h.cps` and `tc55h_post.py`
 
 This is an ISA-style interface specification for post-processor authors. Here, “ISA” describes the observable program-file instruction set and continuation protocol; it is not a claim about the controller CPU architecture.
 
-The keywords **MUST**, **MUST NOT**, **SHOULD**, and **MAY** express conformance requirements. This draft remains changeable until physical-machine acceptance is complete. Passing the included validator demonstrates format conformance only, not machining safety.
+The keywords **MUST**, **MUST NOT**, **SHOULD**, and **MAY** express conformance requirements. This baseline defines the cross-CAM file contract implemented by the Fusion and FreeCAD posts. Passing the included validator demonstrates format conformance only, not machining safety. Unverified machine behavior is tracked separately.
 
 ## 1. Scope and conformance
 
@@ -100,7 +100,7 @@ XY arcs use incremental I/J centre offsets even though endpoint coordinates are 
 - The controller does not automatically call the next file; the operator runs files in numeric order.
 - A split is made only after a complete motion. A nearby clearance-height endpoint is preferred; a forced split may occur at a completed cutting endpoint.
 - An intermediate file keeps the spindle running while retracting Z to the operation clearance height, then ends with `M05 M02`.
-- The next file restores `G90`, spindle direction and scaled speed, rapids to the saved X/Y at clearance Z, and feeds to the saved Z using the Fusion plunge feed.
+- The next file restores `G90`, spindle direction and scaled speed, rapids to the saved X/Y at clearance Z, and feeds to the saved Z using the CAM plunge feed.
 - If the split endpoint is already at clearance height, the redundant retract and descent are omitted.
 - The next unexecuted CAM motion follows the re-entry; the previously completed motion is not repeated.
 - Existing continuation filenames cause posting to stop instead of overwriting them.
@@ -130,7 +130,7 @@ Direction may be `M04`; spindle words are omitted if the saved spindle state was
 
 ## Spindle contract
 
-Fusion contains physical spindle RPM. The emitted TC55H command is:
+The CAM input contains physical spindle RPM. The emitted TC55H command is:
 
 `S = round(physical RPM / 10)`
 
@@ -162,9 +162,9 @@ A conforming generator MUST fail before producing continuation files when:
 
 The base output file may be managed by the CAM application's normal overwrite confirmation. Continuation files MUST NOT be silently replaced.
 
-## Conformance evidence required before freezing
+## Machine-acceptance evidence
 
-The draft may be frozen only after recording successful results for:
+The following evidence remains required before calling a specific CAM adapter fully machine-accepted:
 
 - rapid and linear positioning, feed changes, and pauses;
 - clockwise/counter-clockwise spindle direction and stop behavior;
@@ -177,7 +177,7 @@ The draft may be frozen only after recording successful results for:
 - rejection of invalid speed, multiple tools, rotary paths, and unsupported commands; and
 - comparison of the reconstructed multi-file path with the originating CAM simulation.
 
-Until that evidence is complete, implementations MUST identify themselves as experimental and SHOULD expose the specification revision they target.
+Until that evidence is complete for an adapter, its documentation MUST identify the missing physical tests and SHOULD expose the specification revision it targets.
 
 ## Open items for a later revision
 
@@ -186,6 +186,6 @@ Until that evidence is complete, implementations MUST identify themselves as exp
 - Confirmed rounding and coordinate precision behavior at controller boundaries.
 - Safe and electrically verified `M51`–`M66` coolant/GPIO mapping.
 - C-axis orientation, units, gearing, limits, and indexed versus simultaneous operation.
-- Results from a second CAM implementation and cross-CAM path comparison.
+- Physical acceptance results from the FreeCAD adapter and a cross-CAM path comparison.
 
 Changes to any file grammar, word meaning, spindle scaling, or continuation invariant are breaking changes until a compatibility policy is defined.
